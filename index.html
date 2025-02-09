@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>funayuurei</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #1e1e2f;
+      color: #fff;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #2a2a40;
+      padding: 20px;
+      border-bottom: 2px solid #444;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ff6f61;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .social-icons a {
+      color: #fff;
+      font-size: 18px;
+      transition: color 0.3s ease;
+    }
+
+    .social-icons a:hover {
+      color: #ff6f61;
+    }
+
+    .size-toggle {
+      cursor: pointer;
+      font-size: 18px;
+      color: #fff;
+      transition: color 0.3s ease;
+    }
+
+    .size-toggle:hover {
+      color: #ff6f61;
+    }
+
+    #sizePanel {
+      display: none;
+      position: absolute;
+      right: 20px;
+      top: 60px;
+      background: rgba(42, 42, 64, 0.9);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    #sizePanel label {
+      color: #fff;
+      font-size: 14px;
+    }
+
+    #resizeSlider {
+      width: 150px;
+    }
+
+    main {
+      padding: 120px 20px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .grid-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 15px;
+      cursor: pointer;
+      background-color: #2a2a40;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .grid-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .grid-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 24px;
+      backdrop-filter: blur(5px);
+    }
+
+    .grid-item:hover .overlay {
+      opacity: 1;
+    }
+
+    /* Lightbox Styles */
+    #lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 1002;
+    }
+
+    #lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 15px;
+      animation: zoomIn 0.4s ease-in-out;
+      transition: transform 0.3s ease;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    #lightbox.fullscreen img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 0;
+    }
+
+    .lightbox-controls {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .lightbox-controls button {
+      background: rgba(255, 255, 255, 0.8);
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+
+    .lightbox-controls button:hover {
+      background: rgba(255, 255, 255, 1);
+    }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .lightbox-nav button {
+      background: rgba(255, 255, 255, 0.8);
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+
+    .lightbox-nav button:hover {
+      background: rgba(255, 255, 255, 1);
+    }
+
+    @keyframes zoomIn {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">1sL4</div>
+    <div class="social-icons">
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-youtube"></i></a>
+      <a href="#"><i class="fab fa-whatsapp"></i></a> 
+      <a href="#"><i class="fab fa-chrome"></i></a>   
+      <a href="#"><i class="fab fa-google"></i></a> 
+      <a href="#"><i class="fab fa-tiktok"></i></a>   
+      <div class="size-toggle" onclick="toggleSizePanel()">
+        <i class="fas fa-sliders-h"></i>
+      </div>
+      <div class="music-control" id="musicControl">
+        <i id="musicIcon" class="fas fa-play-circle"></i>
+        <audio id="audioPlayer" loop>
+          <source src="1.mp4" type="audio/mp3">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+    </div>
+    <div id="sizePanel">
+      <label for="resizeSlider">Grid Size:</label>
+      <input type="range" id="resizeSlider" min="1" max="5" step="1" value="2">
+    </div>
+  </header>
+
+  <main id="gridContainer">
+    <!-- Gambar akan di-generate oleh JavaScript -->
+  </main>
+
+  <!-- Lightbox -->
+  <div id="lightbox" onclick="closeLightbox()">
+    <div class="lightbox-controls">
+      <button onclick="zoomIn()"><i class="fas fa-search-plus"></i></button>
+      <button onclick="zoomOut()"><i class="fas fa-search-minus"></i></button>
+      <button onclick="toggleFullscreen()"><i class="fas fa-expand"></i></button>
+    </div>
+    <div class="lightbox-nav">
+      <button onclick="prevImage()"><i class="fas fa-chevron-left"></i></button>
+      <button onclick="nextImage()"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <img id="lightboxImage" src="" alt="Enlarged Image">
+  </div>
+
+  <script>
+    // Generate gambar
+    const container = document.getElementById('gridContainer');
+    const images = [];
+    for (let i = 1; i <= 283; i++) {
+      const fileFormat = i <= 25 ? 'jpeg' : 'jpg';
+      const imageSrc = `${i}.${fileFormat}`;
+      images.push(imageSrc);
+      const div = document.createElement('div');
+      div.className = 'grid-item';
+      div.innerHTML = `
+        <img src="${imageSrc}" alt="Image ${i}" onclick="openLightbox('${imageSrc}', ${i - 1})">
+      `;
+      container.appendChild(div);
+    }
+
+    // Lightbox functions
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightboxImage');
+    let currentImageIndex = 0;
+
+    function openLightbox(imageSrc, index) {
+      currentImageIndex = index;
+      lightboxImage.src = imageSrc;
+      lightbox.style.display = 'flex';
+    }
+
+    function closeLightbox() {
+      lightbox.style.display = 'none';
+      lightboxImage.style.transform = 'scale(1)';
+      lightbox.classList.remove('fullscreen');
+    }
+
+    function zoomIn() {
+      const currentScale = parseFloat(lightboxImage.style.transform.replace('scale(', '').replace(')', '')) || 1;
+      lightboxImage.style.transform = `scale(${currentScale + 0.1})`;
+    }
+
+    function zoomOut() {
+      const currentScale = parseFloat(lightboxImage.style.transform.replace('scale(', '').replace(')', '')) || 1;
+      if (currentScale > 0.5) {
+        lightboxImage.style.transform = `scale(${currentScale - 0.1})`;
+      }
+    }
+
+    function toggleFullscreen() {
+      lightbox.classList.toggle('fullscreen');
+    }
+
+    function prevImage() {
+      currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+      lightboxImage.src = images[currentImageIndex];
+    }
+
+    function nextImage() {
+      currentImageIndex = (currentImageIndex + 1) % images.length;
+      lightboxImage.src = images[currentImageIndex];
+    }
+
+    // Toggle size panel
+    const sizePanel = document.getElementById('sizePanel');
+    function toggleSizePanel() {
+      sizePanel.style.display = sizePanel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Resize grid
+    const resizeSlider = document.getElementById('resizeSlider');
+    resizeSlider.addEventListener('input', function () {
+      const columns = resizeSlider.value;
+      container.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+    });
+
+    // Mencegah klik kanan
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // Mencegah drag gambar
+    document.addEventListener('dragstart', function(e) {
+      if (e.target.tagName === 'IMG') {
+        e.preventDefault();
+      }
+    });
+
+    // Kontrol musik
+    const musicControl = document.getElementById('musicControl');
+    const musicIcon = document.getElementById('musicIcon');
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    musicControl.addEventListener('click', function() {
+      if (audioPlayer.paused) {
+        audioPlayer.play();
+        musicIcon.classList.remove('fa-play-circle');
+        musicIcon.classList.add('fa-pause-circle');
+      } else {
+        audioPlayer.pause();
+        musicIcon.classList.remove('fa-pause-circle');
+        musicIcon.classList.add('fa-play-circle');
+      }
+    });
+  </script>
+</body>
+</html>
